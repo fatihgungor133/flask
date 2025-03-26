@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRON Address Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            word-break: break-all;
+        }
+        .error {
+            color: #dc3545;
+            padding: 10px;
+            background-color: #f8d7da;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .copy-btn {
+            background-color: #6c757d;
+            padding: 5px 10px;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TRON Address Generator</h1>
+        <button onclick="generateAddress()">Generate New Address</button>
+        
+        <div id="result" class="result" style="display: none;">
+            <p>
+                <strong>Private Key:</strong> 
+                <span id="privateKey"></span>
+                <button class="copy-btn" onclick="copyToClipboard('privateKey')">Copy</button>
+            </p>
+            <p>
+                <strong>Public Key:</strong> 
+                <span id="publicKey"></span>
+                <button class="copy-btn" onclick="copyToClipboard('publicKey')">Copy</button>
+            </p>
+            <p>
+                <strong>TRON Address:</strong> 
+                <span id="tronAddress"></span>
+                <button class="copy-btn" onclick="copyToClipboard('tronAddress')">Copy</button>
+            </p>
+        </div>
+        
+        <div id="error" class="error" style="display: none;"></div>
+    </div>
+
+    <script>
+    async function generateAddress() {
+        try {
+            const response = await fetch('/generate', {
+                method: 'POST'
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                document.getElementById('privateKey').textContent = data.data.private_key;
+                document.getElementById('publicKey').textContent = data.data.public_key;
+                document.getElementById('tronAddress').textContent = data.data.tron_address;
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('error').style.display = 'none';
+            } else {
+                throw new Error(data.error || 'Failed to generate address');
+            }
+        } catch (error) {
+            document.getElementById('error').textContent = error.message;
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+        }
+    }
+
+    function copyToClipboard(elementId) {
+        const element = document.getElementById(elementId);
+        const text = element.textContent;
+        navigator.clipboard.writeText(text).then(function() {
+            alert('Copied to clipboard!');
+        }).catch(function(err) {
+            console.error('Failed to copy text: ', err);
+        });
+    }
+    </script>
+</body>
+</html>
