@@ -1,12 +1,17 @@
 from flask import Flask, render_template, jsonify
 import os
 from ecdsa import SigningKey, SECP256k1
-from eth_hash.auto import keccak
 import base58
 from flask_cors import CORS
+from Crypto.Hash import keccak
 
 app = Flask(__name__)
 CORS(app)
+
+def keccak256(data):
+    k = keccak.new(digest_bits=256)
+    k.update(data)
+    return k.digest()
 
 def generate_tron_address():
     # Generate a random 32-byte private key
@@ -17,7 +22,7 @@ def generate_tron_address():
     public_key = sk.verifying_key.to_string().hex()
 
     # Hash the public key with Keccak-256
-    hash_value = keccak(bytes.fromhex(public_key)).hex()
+    hash_value = keccak256(bytes.fromhex(public_key)).hex()
 
     # Add '41' prefix and take last 40 characters
     tron_address_hex = '41' + hash_value[-40:]
@@ -38,7 +43,7 @@ def verify_tron_address(private_key, tron_address):
         public_key = sk.verifying_key.to_string().hex()
 
         # Hash public key with Keccak-256
-        hash_value = keccak(bytes.fromhex(public_key)).hex()
+        hash_value = keccak256(bytes.fromhex(public_key)).hex()
 
         # Recreate TRON address
         tron_address_hex = '41' + hash_value[-40:]
