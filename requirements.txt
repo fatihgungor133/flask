@@ -2,3 +2,5 @@ flask==2.0.1
 ecdsa==0.18.0
 pysha3==1.0.2
 base58==2.1.1
+flask-cors==3.0.10
+eth-hash==0.5.1

@@ -3,8 +3,10 @@ import os
 from ecdsa import SigningKey, SECP256k1
 from eth_hash.auto import keccak
 import base58
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 def generate_tron_address():
     # Generate a random 32-byte private key
@@ -50,10 +52,6 @@ def verify_tron_address(private_key, tron_address):
 @app.route('/')
 def index():
     return render_template('index.html')
-
-from flask_cors import CORS
-
-CORS(app)
 
 @app.route('/generate', methods=['GET', 'POST'])
 def generate():
